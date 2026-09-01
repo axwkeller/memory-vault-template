@@ -61,7 +61,7 @@ Prerequisites: Claude Code, git, and (optionally) Obsidian pointed at the vault.
 4. Install the skills and the write-zone hook:
 
    ```bash
-   cp -R claude/skills/memory-groom claude/skills/decision-capture claude/skills/project-pulse claude/skills/meeting-capture ~/.claude/skills/
+   cp -R claude/skills/memory-groom claude/skills/decision-capture claude/skills/project-pulse claude/skills/meeting-capture claude/skills/weekly-review ~/.claude/skills/
    cp claude/hooks/memory-write-zones.sh ~/.claude/hooks/
    ```
 
@@ -103,11 +103,13 @@ prompt to answer it. With cron:
 17 20 * * 0 cd <vault path> && MEMORY_GROOM=1 claude -p "/memory-groom" --permission-mode acceptEdits >> ~/memory-groom.log 2>&1
 ```
 
-The optional project pulse runs the same way, scheduled shortly before the groom so
-the groom audits freshly updated project notes:
+The optional project pulse and weekly review run the same way, staggered before the
+groom so the pulse refreshes project notes, the review reads them and the week's
+capture, and the groom promotes and prunes last:
 
 ```cron
 30 19 * * 0 cd <vault path> && MEMORY_GROOM=1 claude -p "/project-pulse" --permission-mode acceptEdits >> ~/project-pulse.log 2>&1
+0 20 * * 0 cd <vault path> && MEMORY_GROOM=1 claude -p "/weekly-review" --permission-mode acceptEdits >> ~/weekly-review.log 2>&1
 ```
 
 On macOS, a LaunchAgent with a `StartCalendarInterval` wrapping the same command

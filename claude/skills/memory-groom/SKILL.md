@@ -42,6 +42,8 @@ Classify each captured fact with the storage rule from `Home.md`: a fact must be
   and `date` frontmatter when it needs room.
 - Fast-changing state → `Radar.md`, or drop it if already stale.
 - Noise (session-local detail, facts the repo or rules already record) → drop.
+- `weekly-review-*.md` files: promote durable bits like any capture, keep the file
+  in place as the week's record, and delete reviews older than four weeks.
 
 A promoted fact keeps its substance, not its wording; distill. Add `[[wikilinks]]`
 between the notes a fact connects.
