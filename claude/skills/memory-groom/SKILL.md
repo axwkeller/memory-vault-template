@@ -68,6 +68,8 @@ Across the curated notes (root notes and `Memories/`; `Auto Memory/` is exempt):
 - Check frontmatter consistency: every project note has `type: project`, `status`,
   and `repo`; every person note has `type: person`. A note missing its `type` is
   invisible to the index views.
+- Age out person notes' `## Running threads`: delete bullets the evidence shows
+  resolved, and flag ones stale past 90 days under Watching instead of guessing.
 - List dead wikilinks (`[[Target]]` with no `Target.md`) and orphans (curated notes
   no index or note links to).
 

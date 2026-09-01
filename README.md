@@ -61,7 +61,7 @@ Prerequisites: Claude Code, git, and (optionally) Obsidian pointed at the vault.
 4. Install the skills and the write-zone hook:
 
    ```bash
-   cp -R claude/skills/memory-groom claude/skills/decision-capture claude/skills/project-pulse ~/.claude/skills/
+   cp -R claude/skills/memory-groom claude/skills/decision-capture claude/skills/project-pulse claude/skills/meeting-capture ~/.claude/skills/
    cp claude/hooks/memory-write-zones.sh ~/.claude/hooks/
    ```
 
@@ -119,6 +119,8 @@ survives sleep better than cron.
   something and it lands there too.
 - Say "groom memory" to run a promotion pass by hand, "capture decisions" to log
   the session's durable choices, and "project pulse" to refresh the project notes.
+- Paste meeting notes and say "capture this meeting" to file them into person and
+  project notes; "prep for my meeting with X" pulls the reverse brief.
 - Review groom commits like any other diff (`git log --oneline --grep '^Groom memory'`);
   git is the audit trail, and a bad promotion is a `git revert` away.
 - Keep `Home.md` and `Radar.md` short. Every line there is read every session;
