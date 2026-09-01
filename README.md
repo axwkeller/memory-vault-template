@@ -127,14 +127,47 @@ survives sleep better than cron.
 
 ## Day to day
 
-- Sessions capture facts to `Auto Memory/` automatically; ask Claude to "remember"
-  something and it lands there too.
-- Say "groom memory" to run a promotion pass by hand, "capture decisions" to log
-  the session's durable choices, "project pulse" to refresh the project notes, and
-  "weekly review" to write the week's themes/progress/stale note.
-- Paste meeting notes and say "capture this meeting" to file them into person and
-  project notes; "prep for my meeting with X" pulls the reverse brief.
-- Review groom commits like any other diff (`git log --oneline --grep '^Groom memory'`);
-  git is the audit trail, and a bad promotion is a `git revert` away.
+Nothing here requires remembering to do anything; the phrases below are the manual
+levers on top of what runs by itself.
+
+- **Automatic, every session:** `Radar.md` is injected at session start; auto-memory
+  captures raw facts to `Auto Memory/`; the session-end habit captures durable
+  decisions there too. Ask Claude to "remember" something and it lands in
+  `Auto Memory/` as well.
+- **"capture decisions"**: log this session's durable choices (chose X over Y
+  because Z) as `Auto Memory/decision-*.md` files.
+- **"capture this meeting"** (with notes or a transcript pasted): file decisions and
+  action items into the person and project notes.
+- **"prep for my meeting with X"**: read-only brief from X's person note, open
+  threads, and open PRs between you.
+- **"project pulse"**: refresh active project notes' Now / Open threads / Punted
+  from the last week of GitHub activity (plus Jira where configured).
+- **"weekly review"**: write the week's themes/progress/stale note into
+  `Auto Memory/`.
+- **"groom memory"**: promote from `Auto Memory/` into curated notes, prune, audit
+  freshness.
+- **Editing curated notes by hand** is always fine; the write-zone hook asks once to
+  confirm the edit was wanted. In Obsidian, just edit; the index tables update
+  themselves from frontmatter, so never hand-edit a table.
+
+## The weekly cycle
+
+With the three jobs scheduled as above, each stage feeds the next: the pulse
+refreshes project notes, the review writes `Auto Memory/weekly-review-*.md` from the
+refreshed notes and the week's capture, and the groom promotes durable capture into
+curated notes, prunes, audits freshness, commits, and pushes.
+
+The morning after: skim the weekly review note in `Auto Memory/`, then the groom's
+commit (`git log --grep '^Groom memory' -1 -p`). Anything the run would not decide
+alone sits under Watching in `Radar.md`; settle it by editing the curated note and
+removing the flag. Git is the audit trail, and a bad promotion is a `git revert`
+away.
+
+## Keeping it healthy
+
 - Keep `Home.md` and `Radar.md` short. Every line there is read every session;
   growth belongs in linked child notes.
+- A note earns its place by changing how a future session behaves; distilled facts,
+  not transcripts.
+- Trust the review horizon: `Review Queue.base` (embedded in `Radar.md`) surfaces
+  notes past 90 days, and the groom works that list.
