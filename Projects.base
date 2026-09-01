@@ -1,0 +1,39 @@
+filters:
+  and:
+    - 'type == "project"'
+    - 'file.ext == "md"'
+
+formulas:
+  days_since_review: 'if(reviewed, (today() - date(reviewed)).days, "")'
+
+properties:
+  status:
+    displayName: Status
+  repo:
+    displayName: Repo
+  reviewed:
+    displayName: Reviewed
+  formula.days_since_review:
+    displayName: "Days since review"
+
+views:
+  - type: table
+    name: Projects
+    order:
+      - file.name
+      - status
+      - repo
+      - reviewed
+    groupBy:
+      property: status
+      direction: ASC
+
+  - type: table
+    name: Active
+    filters:
+      and:
+        - 'status == "active"'
+    order:
+      - file.name
+      - repo
+      - formula.days_since_review

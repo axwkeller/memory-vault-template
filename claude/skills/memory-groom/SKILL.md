@@ -34,7 +34,10 @@ Classify each captured fact with the storage rule from `Home.md`: a fact must be
 - Behavior corrections and recurring gotchas → a note in `Memories/` (update an
   existing note covering the topic before creating one).
 - Facts about a project, person, or decision → the matching curated note under its
-  index; create the note and add it to the index if it does not exist.
+  index; create the note if it does not exist. Project and person notes carry the
+  sparse frontmatter from `Home.md` (`type`, `status`/`repo` or `org`, `reviewed`);
+  the index notes render Bases views over that frontmatter, so a correctly stamped
+  note appears in its index with no index edit.
 - Fast-changing state → `Radar.md`, or drop it if already stale.
 - Noise (session-local detail, facts the repo or rules already record) → drop.
 
@@ -58,7 +61,11 @@ remaining file must hold only facts not yet worth promoting.
 
 Across the curated notes (root notes and `Memories/`; `Auto Memory/` is exempt):
 
-- List notes whose `reviewed:` frontmatter date is more than 90 days old, or absent.
+- List notes whose `reviewed:` frontmatter date is more than 90 days old, or absent
+  (`Review Queue.base` renders the same list inside Obsidian).
+- Check frontmatter consistency: every project note has `type: project`, `status`,
+  and `repo`; every person note has `type: person`. A note missing its `type` is
+  invisible to the index views.
 - List dead wikilinks (`[[Target]]` with no `Target.md`) and orphans (curated notes
   no index or note links to).
 

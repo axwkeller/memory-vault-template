@@ -22,6 +22,7 @@ The design follows a few rules that keep agent memory from rotting:
 | `Home.md` | Entry point and vault contract; read first every session |
 | `Radar.md` | What is active right now; the note that changes most |
 | `Projects Index.md`, `People Index.md`, `Decisions Index.md` | Curated indexes; one child note per project, person, decision |
+| `Projects.base`, `People.base`, `Review Queue.base` | Bases views the indexes and Radar embed; they render from note frontmatter (`type`, `status`, `repo`, `org`, `reviewed`), so there are no hand-edited index tables. Needs Obsidian 1.9+ with the Bases core plugin |
 | `Memories/` | Agent-written memory notes (behavior corrections, recurring gotchas) |
 | `Auto Memory/` | Raw machine capture from Claude Code's auto-memory; promoted and pruned by the groom run |
 | `claude/` | The skill and hook to install into your Claude Code config |

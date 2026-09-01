@@ -31,6 +31,10 @@ where code lives.>
 - Every stored fact is **timeless, dated, or a pointer**: slow knowledge is stored
   directly; anything time-bound carries its date; fast-changing data is a link to
   the live source with a timestamp, never a copy.
+- Frontmatter stays sparse: `reviewed` everywhere, `type` on content notes
+  (`project` | `person`), `status` and `repo` on projects, `org` on people. The
+  index notes and [[Radar]] embed Bases views (`Projects.base`, `People.base`,
+  `Review Queue.base`) over those fields; update the frontmatter, never the tables.
 - Curated notes (root notes and `Memories/`) carry a `reviewed:` frontmatter date,
   stamped whenever a session verifies or updates the note. The scheduled groom run
   promotes from `Auto Memory/`, prunes, and audits notes past a 90-day review
