@@ -108,6 +108,7 @@ survives sleep better than cron.
 - Sessions capture facts to `Auto Memory/` automatically; ask Claude to "remember"
   something and it lands there too.
 - Say "groom memory" to run a promotion pass by hand.
-- Review groom commits like any other diff; git is the audit trail and the undo.
+- Review groom commits like any other diff (`git log --oneline --grep '^Groom memory'`);
+  git is the audit trail, and a bad promotion is a `git revert` away.
 - Keep `Home.md` and `Radar.md` short. Every line there is read every session;
   growth belongs in linked child notes.
