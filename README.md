@@ -62,11 +62,13 @@ Prerequisites: Claude Code, git, and (optionally) Obsidian pointed at the vault.
 
    ```bash
    cp -R claude/skills/memory-groom claude/skills/decision-capture claude/skills/project-pulse claude/skills/meeting-capture claude/skills/weekly-review ~/.claude/skills/
-   cp claude/hooks/memory-write-zones.sh ~/.claude/hooks/
+   cp claude/hooks/memory-write-zones.sh claude/hooks/session-radar.sh ~/.claude/hooks/
    ```
 
-   Set `VAULT` in the hook to your vault path, then register it in
-   `~/.claude/settings.json`:
+   Set `VAULT` in both hooks to your vault path, then register them in
+   `~/.claude/settings.json`. The write-zone hook confirms curated-note edits; the
+   session-radar hook injects `Radar.md` at session start so sessions actually read
+   the vault:
 
    ```json
    {
@@ -76,6 +78,14 @@ Prerequisites: Claude Code, git, and (optionally) Obsidian pointed at the vault.
            "matcher": "Edit|Write|MultiEdit|NotebookEdit",
            "hooks": [
              { "type": "command", "command": "$HOME/.claude/hooks/memory-write-zones.sh" }
+           ]
+         }
+       ],
+       "SessionStart": [
+         {
+           "matcher": "startup|resume|clear",
+           "hooks": [
+             { "type": "command", "command": "$HOME/.claude/hooks/session-radar.sh" }
            ]
          }
        ]
