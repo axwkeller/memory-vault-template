@@ -37,7 +37,9 @@ Classify each captured fact with the storage rule from `Home.md`: a fact must be
   index; create the note if it does not exist. Project and person notes carry the
   sparse frontmatter from `Home.md` (`type`, `status`/`repo` or `org`, `reviewed`);
   the index notes render Bases views over that frontmatter, so a correctly stamped
-  note appears in its index with no index edit.
+  note appears in its index with no index edit. A `decision-*.md` capture becomes a
+  dated bullet in `Decisions Index.md`, or its own root note with `type: decision`
+  and `date` frontmatter when it needs room.
 - Fast-changing state → `Radar.md`, or drop it if already stale.
 - Noise (session-local detail, facts the repo or rules already record) → drop.
 

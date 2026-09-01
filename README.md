@@ -53,13 +53,15 @@ Prerequisites: Claude Code, git, and (optionally) Obsidian pointed at the vault.
    ## Memory
    The Obsidian vault at <vault path> is the single source of truth for durable
    memory about me. Read Home.md and Radar.md there when context calls for it.
+   At the end of a piece of work, capture any durable decision (chose X over Y
+   because Z) into the vault's Auto Memory/ per the decision-capture skill.
    After updating it, commit and push.
    ```
 
-4. Install the groom skill and the write-zone hook:
+4. Install the skills and the write-zone hook:
 
    ```bash
-   cp -R claude/skills/memory-groom ~/.claude/skills/
+   cp -R claude/skills/memory-groom claude/skills/decision-capture ~/.claude/skills/
    cp claude/hooks/memory-write-zones.sh ~/.claude/hooks/
    ```
 
