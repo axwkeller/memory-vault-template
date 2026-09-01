@@ -22,7 +22,7 @@ The design follows a few rules that keep agent memory from rotting:
 | `Home.md` | Entry point and vault contract; read first every session |
 | `Radar.md` | What is active right now; the note that changes most |
 | `Projects Index.md`, `People Index.md`, `Decisions Index.md` | Curated indexes; one child note per project, person, decision |
-| `Projects.base`, `People.base`, `Review Queue.base` | Bases views the indexes and Radar embed; they render from note frontmatter (`type`, `status`, `repo`, `org`, `reviewed`), so there are no hand-edited index tables. Needs Obsidian 1.9+ with the Bases core plugin |
+| `Projects.base`, `People.base`, `Decisions.base`, `Review Queue.base` | Bases views the indexes and Radar embed; they render from note frontmatter (`type`, `status`, `repo`, `org`, `date`, `reviewed`), so there are no hand-edited index tables. Needs Obsidian 1.9+ with the Bases core plugin |
 | `Memories/` | Agent-written memory notes (behavior corrections, recurring gotchas) |
 | `Auto Memory/` | Raw machine capture from Claude Code's auto-memory; promoted and pruned by the groom run |
 | `claude/` | The skill and hook to install into your Claude Code config |
@@ -130,7 +130,8 @@ survives sleep better than cron.
 - Sessions capture facts to `Auto Memory/` automatically; ask Claude to "remember"
   something and it lands there too.
 - Say "groom memory" to run a promotion pass by hand, "capture decisions" to log
-  the session's durable choices, and "project pulse" to refresh the project notes.
+  the session's durable choices, "project pulse" to refresh the project notes, and
+  "weekly review" to write the week's themes/progress/stale note.
 - Paste meeting notes and say "capture this meeting" to file them into person and
   project notes; "prep for my meeting with X" pulls the reverse brief.
 - Review groom commits like any other diff (`git log --oneline --grep '^Groom memory'`);
