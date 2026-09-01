@@ -61,7 +61,7 @@ Prerequisites: Claude Code, git, and (optionally) Obsidian pointed at the vault.
 4. Install the skills and the write-zone hook:
 
    ```bash
-   cp -R claude/skills/memory-groom claude/skills/decision-capture ~/.claude/skills/
+   cp -R claude/skills/memory-groom claude/skills/decision-capture claude/skills/project-pulse ~/.claude/skills/
    cp claude/hooks/memory-write-zones.sh ~/.claude/hooks/
    ```
 
@@ -103,6 +103,13 @@ prompt to answer it. With cron:
 17 20 * * 0 cd <vault path> && MEMORY_GROOM=1 claude -p "/memory-groom" --permission-mode acceptEdits >> ~/memory-groom.log 2>&1
 ```
 
+The optional project pulse runs the same way, scheduled shortly before the groom so
+the groom audits freshly updated project notes:
+
+```cron
+30 19 * * 0 cd <vault path> && MEMORY_GROOM=1 claude -p "/project-pulse" --permission-mode acceptEdits >> ~/project-pulse.log 2>&1
+```
+
 On macOS, a LaunchAgent with a `StartCalendarInterval` wrapping the same command
 survives sleep better than cron.
 
@@ -110,7 +117,8 @@ survives sleep better than cron.
 
 - Sessions capture facts to `Auto Memory/` automatically; ask Claude to "remember"
   something and it lands there too.
-- Say "groom memory" to run a promotion pass by hand.
+- Say "groom memory" to run a promotion pass by hand, "capture decisions" to log
+  the session's durable choices, and "project pulse" to refresh the project notes.
 - Review groom commits like any other diff (`git log --oneline --grep '^Groom memory'`);
   git is the audit trail, and a bad promotion is a `git revert` away.
 - Keep `Home.md` and `Radar.md` short. Every line there is read every session;
