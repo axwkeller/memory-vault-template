@@ -1,6 +1,6 @@
 ---
 name: weekly-review
-description: Write a weekly review note into the memory vault from the week's Auto Memory capture, git and GitHub activity, and Radar - themes, stale projects, open decisions, progress. Use when the user says "weekly review" or on the scheduled weekly review run.
+description: Write a weekly review note into the memory vault from the week's Auto Memory capture, git and GitHub activity, and Bearing - themes, stale projects, open decisions, progress. Use when the user says "weekly review" or on the scheduled weekly review run.
 ---
 
 # Weekly review
@@ -20,7 +20,7 @@ Window: the last 7 days.
   `repo` field: `gh search prs --author @me --repo <owner/repo> --updated <start>..`
   and the `--reviewed-by @me` variant. Local clones under `your code directory` add
   `git log --all --since='7 days ago' --author=<user>` color when present.
-- State: `Radar.md` (Active, Watching), the project notes' `## Now` and
+- State: `Bearing.md` (Active, Watching), the project notes' `## Now` and
   `## Open threads`, and `Review Queue.base`'s criteria (curated notes with
   `reviewed:` absent or older than 90 days).
 
@@ -40,7 +40,7 @@ date: YYYY-MM-DD
 <2-4 bullets: what the week was actually about, named by PRs, tickets, notes.>
 
 ## Progress
-<Radar Active items and project ## Now lines, each with what moved or "no movement".>
+<Bearing Active items and project ## Now lines, each with what moved or "no movement".>
 
 ## Open decisions
 <Watching items and unpromoted decision captures awaiting a call.>

@@ -63,7 +63,7 @@ Given a name, output a brief to the user; write nothing.
    (`gh search prs --repo <repo> --author <them> --review-requested @me` and the
    reverse) for repos in [[Projects Index]].
 3. Present: who they are (one line), open threads oldest first, and anything under
-   Radar's Watching that names them.
+   Bearing's Watching that names them.
 
 ## Groom interplay
 

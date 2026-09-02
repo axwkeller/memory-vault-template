@@ -14,7 +14,7 @@ evidence; it never pads a note with activity logs.
 
 In `~/memory`, every root note with `type: project` and
 `status: active` frontmatter is in scope; its `repo` field names the GitHub repo.
-Read each note plus `Radar.md` before gathering.
+Read each note plus `Bearing.md` before gathering.
 
 ## 2. Gather a week of evidence
 
@@ -53,8 +53,8 @@ initiative worth keeping moves to `Decisions Index.md` territory via a
 `decision-*.md` capture in `Auto Memory/`, not deletion into nothing. Stamp
 `reviewed:` with today's date on every note updated.
 
-## 4. Radar and commit
+## 4. Bearing and commit
 
-Sync `Radar.md`'s Active section with what the notes now say; flag contradictions
+Sync `Bearing.md`'s Active section with what the notes now say; flag contradictions
 under `## Watching` instead of resolving them. One commit, subject starting
 `Project pulse:` with a one-line summary, then push.

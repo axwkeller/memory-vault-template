@@ -7,7 +7,7 @@ description: Groom the memory vault at ~/memory - promote durable facts from Aut
 
 One pass over the memory vault (`~/memory`; adjust if yours lives elsewhere) that
 keeps raw capture from rotting: promote, prune, reconcile, audit, commit. Vault
-conventions live in the vault's `Home.md`; read it first.
+conventions live in the vault's `README.md`; read it first.
 
 Write carefully: update existing notes in place and reconcile with what is there.
 A groom run never creates parallel copies of a fact; the curated note is the single
@@ -24,23 +24,23 @@ git diff --name-only ${last:-$(git rev-list --max-parents=0 HEAD)} -- 'Auto Memo
 ```
 
 No prior groom commit means the whole of `Auto Memory/` is in scope. Read every
-in-scope file, plus `Home.md`, `Radar.md`, and the index notes.
+in-scope file, plus `Atlas.md`, `Bearing.md`, and the index notes.
 
 ## 2. Promote
 
-Classify each captured fact with the storage rule from `Home.md`: a fact must be
+Classify each captured fact with the storage rule from `README.md`: a fact must be
 **timeless, dated, or a pointer**. Then route it:
 
 - Behavior corrections and recurring gotchas → a note in `Memories/` (update an
   existing note covering the topic before creating one).
 - Facts about a project, person, or decision → the matching curated note under its
   index; create the note if it does not exist. Project and person notes carry the
-  sparse frontmatter from `Home.md` (`type`, `status`/`repo` or `org`, `reviewed`);
+  sparse frontmatter from `README.md` (`type`, `status`/`repo` or `org`, `reviewed`);
   the index notes render Bases views over that frontmatter, so a correctly stamped
   note appears in its index with no index edit. A `decision-*.md` capture becomes a
   dated bullet in `Decisions Index.md`, or its own root note with `type: decision`
   and `date` frontmatter when it needs room.
-- Fast-changing state → `Radar.md`, or drop it if already stale.
+- Fast-changing state → `Bearing.md`, or drop it if already stale.
 - Noise (session-local detail, facts the repo or rules already record) → drop.
 - `weekly-review-*.md` files: promote durable bits like any capture, keep the file
   in place as the week's record, and delete reviews older than four weeks.
@@ -51,7 +51,7 @@ between the notes a fact connects.
 ## 3. Reconcile, never overwrite
 
 A captured fact that contradicts a curated note is flagged, not resolved: add a line
-under `## Watching` in `Radar.md` naming both notes and the conflict. The curated
+under `## Watching` in `Bearing.md` naming both notes and the conflict. The curated
 note stays as it is until a human (or an explicitly asked session) settles it.
 
 ## 4. Prune
@@ -76,7 +76,7 @@ Across the curated notes (root notes and `Memories/`; `Auto Memory/` is exempt):
   no index or note links to).
 
 Fix the mechanical ones (add missing index lines, correct obvious link typos). Add
-anything needing judgment to `## Watching` in `Radar.md`. Stamp `reviewed:` with
+anything needing judgment to `## Watching` in `Bearing.md`. Stamp `reviewed:` with
 today's date on every curated note the run verified or updated.
 
 ## 6. Commit
