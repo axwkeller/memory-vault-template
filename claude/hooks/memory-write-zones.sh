@@ -18,7 +18,12 @@ case "$file_path" in
   *) exit 0 ;;
 esac
 
+# A literal `..` or `.` segment can walk a free-write prefix match out of its
+# zone (e.g. `Auto Memory/../Bearing.md`); the target may not exist yet, so this
+# can't be resolved with realpath. Send it to the ask branch instead of
+# trusting the prefix.
 case "$file_path" in
+  */../*|*/./*|*/..|*/.) ;;
   "$VAULT/Auto Memory/"*) exit 0 ;;
 esac
 
