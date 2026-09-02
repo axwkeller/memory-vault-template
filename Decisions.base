@@ -1,16 +1,14 @@
 filters:
   and:
-    - 'type == "decision"'
-    - 'file.ext == "md"'
+    - type == "decision"
+    - file.ext == "md"
     - not:
         - file.inFolder("Auto Memory")
-
 properties:
   date:
     displayName: Date
   reviewed:
     displayName: Reviewed
-
 views:
   - type: table
     name: Decisions
