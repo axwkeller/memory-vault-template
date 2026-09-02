@@ -1,14 +1,12 @@
 filters:
   and:
-    - 'type == "person"'
-    - 'file.ext == "md"'
-
+    - type == "person"
+    - file.ext == "md"
 properties:
   org:
     displayName: Org
   reviewed:
     displayName: Reviewed
-
 views:
   - type: table
     name: People

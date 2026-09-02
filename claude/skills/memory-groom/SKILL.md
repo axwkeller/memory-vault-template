@@ -24,7 +24,9 @@ git diff --name-only ${last:-$(git rev-list --max-parents=0 HEAD)} -- 'Auto Memo
 ```
 
 No prior groom commit means the whole of `Auto Memory/` is in scope. Read every
-in-scope file, plus `Atlas.md`, `Bearing.md`, and the index notes.
+in-scope file, plus `Atlas.md`, `Bearing.md`, and the index notes. `Daily/` is out of
+scope for promotion; durable bits from a day are filed to `Auto Memory/` at capture
+time by whatever writes the daily note.
 
 ## 2. Promote
 
@@ -59,11 +61,13 @@ note stays as it is until a human (or an explicitly asked session) settles it.
 Remove what step 2 promoted or dropped: delete the `Auto Memory/` file (or the
 promoted lines from a multi-fact file) and its line in `Auto Memory/MEMORY.md`.
 Every remaining index line must point at a file that still exists, and every
-remaining file must hold only facts not yet worth promoting.
+remaining file must hold only facts not yet worth promoting. Never read, promote
+from, or delete anything under `Daily/`; it is a record, not capture.
 
 ## 5. Audit freshness
 
-Across the curated notes (root notes and `Memories/`; `Auto Memory/` is exempt):
+Across the curated notes (root notes and `Memories/`; `Auto Memory/` and `Daily/`
+are exempt, and never get a `reviewed:` stamp):
 
 - List notes whose `reviewed:` frontmatter date is more than 90 days old, or absent
   (`Review Queue.base` renders the same list inside Obsidian).

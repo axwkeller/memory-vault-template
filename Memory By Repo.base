@@ -1,18 +1,25 @@
 filters:
   and:
-    - type == "decision"
+    - repo != null
     - file.ext == "md"
     - not:
         - file.inFolder("Auto Memory")
 properties:
-  date:
-    displayName: Date
+  type:
+    displayName: Type
+  repo:
+    displayName: Repo
   reviewed:
     displayName: Reviewed
 views:
   - type: table
-    name: Decisions
+    name: By repo
+    groupBy:
+      property: repo
+      direction: ASC
     order:
       - file.name
-      - date
+      - type
       - reviewed
+    columnSize:
+      note.type: 101
