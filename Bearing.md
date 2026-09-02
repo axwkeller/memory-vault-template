@@ -1,4 +1,4 @@
-# Radar
+# Bearing
 
 What is active right now. Keep this short; move finished items to the relevant
 project or decision note, or delete them.
