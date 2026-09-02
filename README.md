@@ -59,7 +59,7 @@ The design follows a few rules that keep agent memory from rotting:
 | `Memories/` | Agent-written memory notes (behavior corrections, recurring gotchas); `type: memory`, plus `repo:` when scoped to one repo |
 | `Auto Memory/` | Raw machine capture from Claude Code's auto-memory; promoted and pruned by the groom run |
 | `Daily/` | One note per day (`type: daily`, `date`), a record the weekly review reads and the groom never touches; shape under Daily notes below |
-| `claude/` | The skill and hook to install into your Claude Code config |
+| `claude/` | The skills, hooks, and scheduler wrapper to install into your Claude Code config |
 
 ## Setup
 
@@ -133,33 +133,63 @@ Prerequisites: Claude Code, git, and (optionally) Obsidian pointed at the vault.
    `~/.claude/skills/`. If you keep daily notes, point Obsidian's Daily notes core
    plugin at `Daily/` with the `YYYY-MM-DD` format.
 
-## Scheduling the groom run
+## Scheduling the runs
 
-Run the groom weekly so promotion happens without you. Any scheduler works; the
-job is one headless command:
+Each scheduled job is one headless command; the groom's is:
 
 ```bash
 MEMORY_GROOM=1 claude -p "/memory-groom" --permission-mode acceptEdits
 ```
 
 `MEMORY_GROOM=1` lets the run pass the write-zone hook, since nobody is at the
-prompt to answer it. With cron:
+prompt to answer it. The optional project pulse and weekly review run the same way
+and belong before the groom, so the pulse refreshes project notes, the review reads
+them and the week's capture, and the groom promotes and prunes last.
 
-```cron
-17 20 * * 0 cd <vault path> && MEMORY_GROOM=1 claude -p "/memory-groom" --permission-mode acceptEdits >> ~/memory-groom.log 2>&1
+Do not give the three fixed clock times. A laptop asleep at those times either skips
+them or, under launchd, fires every missed job at once on wake, so three staggered
+jobs become three runs committing to the vault in the same minute.
+`claude/launchd/vault-run.sh` is the shape that survives sleep: fired at 04:00 and
+again every 15 minutes, it runs the chain in order once a day, at the first fire
+after 04:00 that finds the machine awake and online, and exits at once on every
+later tick. It also pushes any commit a stage left unpushed before starting the
+next. Set `VAULT` in it, and `RUN_DAY` if the week's notes should land on a day
+other than Monday, then install it:
+
+```bash
+mkdir -p ~/.claude/launchd ~/.local/state/vault-run/logs
+cp claude/launchd/vault-run.sh ~/.claude/launchd/
 ```
 
-The optional project pulse and weekly review run the same way, staggered before the
-groom so the pulse refreshes project notes, the review reads them and the week's
-capture, and the groom promotes and prunes last:
+On macOS, a LaunchAgent at `~/Library/LaunchAgents/<label>.plist` with these keys,
+loaded with `launchctl bootstrap gui/$(id -u) <plist path>`. launchd replays a
+calendar fire the machine slept through as soon as it wakes; the interval tick is
+the fallback for a reboot or an open too short to have caught it:
 
-```cron
-30 19 * * 0 cd <vault path> && MEMORY_GROOM=1 claude -p "/project-pulse" --permission-mode acceptEdits >> ~/project-pulse.log 2>&1
-0 20 * * 0 cd <vault path> && MEMORY_GROOM=1 claude -p "/weekly-review" --permission-mode acceptEdits >> ~/weekly-review.log 2>&1
+```xml
+<key>ProgramArguments</key>
+<array><string>/Users/<you>/.claude/launchd/vault-run.sh</string></array>
+<key>StartCalendarInterval</key>
+<dict><key>Hour</key><integer>4</integer><key>Minute</key><integer>0</integer></dict>
+<key>StartInterval</key>
+<integer>900</integer>
+<key>RunAtLoad</key>
+<true/>
+<key>StandardOutPath</key>
+<string>/Users/<you>/.local/state/vault-run/logs/vault-run.log</string>
+<key>StandardErrorPath</key>
+<string>/Users/<you>/.local/state/vault-run/logs/vault-run.log</string>
 ```
 
-On macOS, a LaunchAgent with a `StartCalendarInterval` wrapping the same command
-survives sleep better than cron.
+Elsewhere, cron, where the tick alone lands the run within 15 minutes of wake:
+
+```cron
+*/15 * * * * $HOME/.claude/launchd/vault-run.sh >> $HOME/.local/state/vault-run/logs/vault-run.log 2>&1
+```
+
+Per-stage output lands in `~/.local/state/vault-run/logs/<skill>.log`. To rerun a
+day by hand, delete `~/.local/state/vault-run/last-run-day` and let the next tick
+pick it up, or run one stage's command directly.
 
 ## Day to day
 
