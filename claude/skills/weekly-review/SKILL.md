@@ -16,6 +16,9 @@ Window: the last 7 days.
 
 - `Auto Memory/`: every file touched this week (`git log --since='7 days ago'
   --name-only -- 'Auto Memory/'`), including decision captures.
+- `Daily/`: the week's `Daily/YYYY-MM-DD.md` notes, the seven dates in the window
+  (missing days are simply absent; say nothing about them). Their `## Work close`
+  and `## Personal close` lines feed Themes.
 - Activity: for each vault note with `type: project` and `status: active`, use its
   `repo` field: `gh search prs --author @me --repo <owner/repo> --updated <start>..`
   and the `--reviewed-by @me` variant. Local clones under `your code directory` add

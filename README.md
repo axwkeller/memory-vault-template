@@ -10,24 +10,26 @@ The design follows a few rules that keep agent memory from rotting:
   from curated notes; a groom pass moves durable facts up and prunes the rest.
 - **Timeless, dated, or a pointer.** Every stored fact is slow knowledge, carries
   its date, or links to the live source. Fast-changing data is never copied in.
-- **Write zones, enforced.** Sessions write freely to `Auto Memory/`; curated notes
-  change only through the groom run or an explicit request, gated by a hook.
+- **Write zones, enforced.** Sessions write freely to `Auto Memory/` and `Daily/`;
+  curated notes change only through the groom run or an explicit request, gated by
+  a hook.
 - **Indexes over folders.** Flat root, Title Case filenames, `[[wikilinks]]`, and
   index notes as the agent's entry points.
 
 ## Conventions
 
 - Flat root, Title Case filenames, `[[wikilinks]]`, index notes instead of folders.
-  Two folders quarantine Claude-written files: `Memories/` (curated) and
-  `Auto Memory/` (raw capture).
+  Three folders hold Claude-written files: `Memories/` (curated), `Auto Memory/`
+  (raw capture), and `Daily/` (one note per day, a record). Records are kept as
+  written: never promoted, pruned, or stamped `reviewed`.
 - Write distilled facts, not transcripts. A note earns its place by changing how a
   future session behaves.
 - Every stored fact is **timeless, dated, or a pointer**: slow knowledge is stored
   directly; anything time-bound carries its date; fast-changing data is a link to
   the live source with a timestamp, never a copy.
 - Frontmatter stays sparse: `reviewed` everywhere, `type` on content notes
-  (`project` | `person` | `decision` | `memory`), `status` and `repo` on projects,
-  `org` on people, `date` on decisions. The index notes and [[Bearing]] embed Bases
+  (`project` | `person` | `decision` | `memory` | `daily`), `status` and `repo` on
+  projects, `org` on people, `date` on decisions and dailies. The index notes and [[Bearing]] embed Bases
   views (`Projects.base`, `People.base`, `Decisions.base`, `Review Queue.base`) over
   those fields; update the frontmatter, never the tables.
 - A `Memories/` note scoped to one repo (a boy-scout rule, a project-only habit)
@@ -41,8 +43,8 @@ The design follows a few rules that keep agent memory from rotting:
   stamped whenever a session verifies or updates the note. The scheduled groom run
   promotes from `Auto Memory/`, prunes, and audits notes past a 90-day review
   horizon; contradictions and judgment calls land under Watching in [[Bearing]].
-- Sessions write freely to `Auto Memory/`; curated notes change through the groom
-  run or an explicit request (a hook enforces this).
+- Sessions write freely to `Auto Memory/` and `Daily/`; curated notes change through
+  the groom run or an explicit request (a hook enforces this).
 - After updating this vault, commit and push.
 
 ## Layout
@@ -56,6 +58,7 @@ The design follows a few rules that keep agent memory from rotting:
 | `Memory By Repo.base` | Bases view grouping every note with a `repo:` field, project notes and repo-scoped `Memories/` notes alike |
 | `Memories/` | Agent-written memory notes (behavior corrections, recurring gotchas); `type: memory`, plus `repo:` when scoped to one repo |
 | `Auto Memory/` | Raw machine capture from Claude Code's auto-memory; promoted and pruned by the groom run |
+| `Daily/` | One note per day (`type: daily`, `date`), a record the weekly review reads and the groom never touches; shape under Daily notes below |
 | `claude/` | The skill and hook to install into your Claude Code config |
 
 ## Setup
@@ -127,7 +130,8 @@ Prerequisites: Claude Code, git, and (optionally) Obsidian pointed at the vault.
 
 5. Add the official Obsidian agent skills (wikilinks, Bases, web capture) from
    [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills) to
-   `~/.claude/skills/`.
+   `~/.claude/skills/`. If you keep daily notes, point Obsidian's Daily notes core
+   plugin at `Daily/` with the `YYYY-MM-DD` format.
 
 ## Scheduling the groom run
 
@@ -179,9 +183,37 @@ levers on top of what runs by itself.
   `Auto Memory/`.
 - **"groom memory"**: promote from `Auto Memory/` into curated notes, prune, audit
   freshness.
+- **Daily notes** under `Daily/` are yours to write however suits you; the weekly
+  review reads whatever the week holds.
 - **Editing curated notes by hand** is always fine; the write-zone hook asks once to
   confirm the edit was wanted. In Obsidian, just edit; the index tables update
   themselves from frontmatter, so never hand-edit a table.
+
+## Daily notes
+
+`Daily/` is a record, not capture: one note per day, kept forever, never promoted,
+pruned, or stamped. Write them by hand in Obsidian or with an end-of-day skill of
+your own; the weekly review reads the week's notes and says nothing about missing
+days. The shape it reads:
+
+```markdown
+---
+type: daily
+date: YYYY-MM-DD
+---
+
+## Plan
+
+## Journal
+
+## Work close
+
+## Personal close
+```
+
+Entries are `HH:MM <text>` lines appended under a section, never rewritten; the two
+close sections feed the review's Themes. Durable facts from a day go to
+`Auto Memory/` when they are written, since the groom never reads `Daily/`.
 
 ## The weekly cycle
 
@@ -204,3 +236,6 @@ away.
   not transcripts.
 - Trust the review horizon: `Review Queue.base` (embedded in `Bearing.md`) surfaces
   notes past 90 days, and the groom works that list.
+- Records stay records. `Daily/` is never groomed, so a durable fact from a day has
+  to be filed into `Auto Memory/` when it is written, or it never reaches a curated
+  note.

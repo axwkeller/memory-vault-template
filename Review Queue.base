@@ -3,6 +3,8 @@ filters:
     - file.ext == "md"
     - not:
         - file.inFolder("Auto Memory")
+    - not:
+        - file.inFolder("Daily")
     - file.name != "README"
 formulas:
   days_since_review: if(reviewed, (today() - date(reviewed)).days, "")
