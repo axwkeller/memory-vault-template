@@ -219,6 +219,19 @@ levers on top of what runs by itself.
   confirm the edit was wanted. In Obsidian, just edit; the index tables update
   themselves from frontmatter, so never hand-edit a table.
 
+## Cadence
+
+- **Morning**: open the machine. The vault run fires within minutes; on `RUN_DAY` it
+  works through pulse, review, and groom, on other days it exits at once. Nothing to
+  do. `tail ~/.local/state/vault-run/logs/vault-run.log` if curious.
+- **During the day**: sessions read Bearing on start. Say "capture decisions" at the
+  end of a piece of work and "capture this meeting" with notes pasted.
+- **Evening**: write today's `Daily/` note, by hand or with an end-of-day skill of
+  your own, then commit and push.
+- **After the weekly run**: read the new `Auto Memory/weekly-review-*.md`, then the
+  groom commit (`git log --grep '^Groom memory' -1 -p`). Anything the groom would not
+  decide alone sits under Watching in `Bearing.md`.
+
 ## Daily notes
 
 `Daily/` is a record, not capture: one note per day, kept forever, never promoted,
