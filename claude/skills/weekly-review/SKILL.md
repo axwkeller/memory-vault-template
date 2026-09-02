@@ -23,7 +23,7 @@ Window: the last 7 days.
   a Call Me Out pattern heading and a fact, so the review needs no read of
   `Call Me Out.md` itself).
 - Activity: for each vault note with `type: project` and `status: active`, use its
-  `repo` field: `gh search prs --author @me --repo <owner/repo> --updated <start>..`
+  `repo` field: `gh search prs --author @me --repo <owner/repo> --updated ">=<start>"`
   and the `--reviewed-by @me` variant. Local clones under `your code directory` add
   `git log --all --since='7 days ago' --author=<user>` color when present.
 - State: `Bearing.md` (Active, Watching), the project notes' `## Now` and
