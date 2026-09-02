@@ -1,0 +1,25 @@
+filters:
+  and:
+    - repo != null
+    - file.ext == "md"
+    - not:
+        - file.inFolder("Auto Memory")
+properties:
+  type:
+    displayName: Type
+  repo:
+    displayName: Repo
+  reviewed:
+    displayName: Reviewed
+views:
+  - type: table
+    name: By repo
+    groupBy:
+      property: repo
+      direction: ASC
+    order:
+      - file.name
+      - type
+      - reviewed
+    columnSize:
+      note.type: 101

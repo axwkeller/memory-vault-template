@@ -26,10 +26,17 @@ The design follows a few rules that keep agent memory from rotting:
   directly; anything time-bound carries its date; fast-changing data is a link to
   the live source with a timestamp, never a copy.
 - Frontmatter stays sparse: `reviewed` everywhere, `type` on content notes
-  (`project` | `person` | `decision`), `status` and `repo` on projects, `org` on
-  people, `date` on decisions. The index notes and [[Bearing]] embed Bases views
-  (`Projects.base`, `People.base`, `Decisions.base`, `Review Queue.base`) over
+  (`project` | `person` | `decision` | `memory`), `status` and `repo` on projects,
+  `org` on people, `date` on decisions. The index notes and [[Bearing]] embed Bases
+  views (`Projects.base`, `People.base`, `Decisions.base`, `Review Queue.base`) over
   those fields; update the frontmatter, never the tables.
+- A `Memories/` note scoped to one repo (a boy-scout rule, a project-only habit)
+  carries `repo: <owner>/<name>` frontmatter matching the project note. The
+  `session-bearing.sh` hook injects it only in sessions whose cwd's git origin
+  matches, alongside Bearing; a `Memories/` note with no `repo:` field stays global
+  and loads only when a session reads it deliberately. `Memory By Repo.base` groups
+  every note carrying a `repo:` field (project notes and scoped memory notes alike)
+  for browsing one project's memory in one place.
 - Curated notes (root notes and `Memories/`) carry a `reviewed:` frontmatter date,
   stamped whenever a session verifies or updates the note. The scheduled groom run
   promotes from `Auto Memory/`, prunes, and audits notes past a 90-day review
@@ -46,7 +53,8 @@ The design follows a few rules that keep agent memory from rotting:
 | `Bearing.md` | What is active right now; the note that changes most |
 | `Projects Index.md`, `People Index.md`, `Decisions Index.md` | Curated indexes; one child note per project, person, decision |
 | `Projects.base`, `People.base`, `Decisions.base`, `Review Queue.base` | Bases views the indexes and Bearing embed; they render from note frontmatter (`type`, `status`, `repo`, `org`, `date`, `reviewed`), so there are no hand-edited index tables. Needs Obsidian 1.9+ with the Bases core plugin |
-| `Memories/` | Agent-written memory notes (behavior corrections, recurring gotchas) |
+| `Memory By Repo.base` | Bases view grouping every note with a `repo:` field, project notes and repo-scoped `Memories/` notes alike |
+| `Memories/` | Agent-written memory notes (behavior corrections, recurring gotchas); `type: memory`, plus `repo:` when scoped to one repo |
 | `Auto Memory/` | Raw machine capture from Claude Code's auto-memory; promoted and pruned by the groom run |
 | `claude/` | The skill and hook to install into your Claude Code config |
 
@@ -90,8 +98,9 @@ Prerequisites: Claude Code, git, and (optionally) Obsidian pointed at the vault.
 
    Set `VAULT` in both hooks to your vault path, then register them in
    `~/.claude/settings.json`. The write-zone hook confirms curated-note edits; the
-   session-bearing hook injects `Bearing.md` at session start so sessions actually
-   read the vault:
+   session-bearing hook injects `Bearing.md` at session start, plus any `Memories/`
+   note whose `repo:` matches the session's git origin, so sessions actually read
+   the vault:
 
    ```json
    {
@@ -153,7 +162,8 @@ survives sleep better than cron.
 Nothing here requires remembering to do anything; the phrases below are the manual
 levers on top of what runs by itself.
 
-- **Automatic, every session:** `Bearing.md` is injected at session start; auto-memory
+- **Automatic, every session:** `Bearing.md` is injected at session start, along with
+  any memory note scoped to the repo the session is in; auto-memory
   captures raw facts to `Auto Memory/`; the session-end habit captures durable
   decisions there too. Ask Claude to "remember" something and it lands in
   `Auto Memory/` as well.
