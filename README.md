@@ -180,7 +180,7 @@ levers on top of what runs by itself.
 - **"project pulse"**: refresh active project notes' Now / Open threads / Punted
   from the last week of GitHub activity (plus Jira where configured).
 - **"weekly review"**: write the week's themes/progress/stale note into
-  `Auto Memory/`.
+  `Auto Memory/`, scored against Compass when you keep a charter.
 - **"groom memory"**: promote from `Auto Memory/` into curated notes, prune, audit
   freshness.
 - **Daily notes** under `Daily/` are yours to write however suits you; the weekly
@@ -212,8 +212,11 @@ date: YYYY-MM-DD
 ```
 
 Entries are `HH:MM <text>` lines appended under a section, never rewritten; the two
-close sections feed the review's Themes. Durable facts from a day go to
-`Auto Memory/` when they are written, since the groom never reads `Daily/`.
+close sections feed the review's Themes. With a Compass charter (below), two more
+line forms name its headings: `HH:MM Goal: <Goals.md heading>: done | moved |
+untouched` feeds Progress, and `HH:MM Evidence: <Call Me Out heading>: <fact>` feeds
+Against Compass. Durable facts from a day go to `Auto Memory/` when they are
+written, since the groom never reads `Daily/`.
 
 ## The weekly cycle
 
@@ -227,6 +230,25 @@ commit (`git log --grep '^Groom memory' -1 -p`). Anything the run would not deci
 alone sits under Watching in `Bearing.md`; settle it by editing the curated note and
 removing the flag. Git is the audit trail, and a bad promotion is a `git revert`
 away.
+
+## Compass, the companion charter
+
+Memory answers "what happened"; a charter answers "was that the week I wanted." The
+optional companion vault,
+[compass-vault-template](https://github.com/axwkeller/compass-vault-template), holds
+who you are, your goals with horizons, how you work, and the patterns you want called
+out, in its own repo behind a hook that denies writes outside an edit session and
+denies reads from work-org checkouts. It is a separate repo because `MEMORY_GROOM=1`
+bypasses this vault's write-zone hook vault-wide, and because this vault may be
+mirrored or shared while a charter never is.
+
+With one present, the weekly review reads `Goals.md` and `How I Work.md` by name and
+adds an `Against Compass` section: one line per goal (moved or no movement), one line
+per pattern the week's evidence shows, and the daily notes' `Evidence:` lines carried
+through. It names headings and never quotes charter text into this vault, and it
+never writes to Compass; a goal that never moves across a few reviews is the signal to
+open a charter session and change the goal or the plan by hand. Without one, the
+review writes its original four sections and says nothing about the absence.
 
 ## Keeping it healthy
 
