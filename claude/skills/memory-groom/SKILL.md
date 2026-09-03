@@ -1,17 +1,24 @@
 ---
 name: memory-groom
-description: Groom the memory vault at ~/memory - promote durable facts from Auto Memory/ into curated notes, prune what was promoted, flag contradictions, and audit note freshness. Use when the user says "groom memory", "promote auto memory", or on a scheduled groom run.
+description: Groom the memory vault at ~/memory - promote durable facts from Auto Memory/ into curated notes, prune what was promoted, flag contradictions, and audit note freshness, showing the whole diff before one confirmation. Use when the user says "groom memory" or "promote auto memory", from /bod with the daily scope, or as the last stage of the Monday ritual.
 ---
 
 # Memory groom
 
 One pass over the memory vault (`~/memory`; adjust if yours lives elsewhere) that
-keeps raw capture from rotting: promote, prune, reconcile, audit, commit. Vault
-conventions live in the vault's `README.md`; read it first.
+keeps raw capture from rotting: promote, prune, reconcile, audit, confirm, commit.
+Vault conventions live in the vault's `README.md`; read it first.
 
 Write carefully: update existing notes in place and reconcile with what is there.
 A groom run never creates parallel copies of a fact; the curated note is the single
 home, and the run moves facts into it.
+
+## Scope
+
+- `daily`, what `/bod` passes: steps 1 to 4, then 6. Promote, reconcile, prune, no
+  freshness audit. Small by design; it runs every morning on one day of capture.
+- Bare `/memory-groom`, or `weekly`: every step. The last stage of the Monday ritual,
+  after `/project-pulse` and `/weekly-review`.
 
 ## 1. Scope the run
 
@@ -67,8 +74,8 @@ from, or delete anything under `Daily/`; it is a record, not capture.
 
 ## 5. Audit freshness
 
-Across the curated notes (root notes and `Memories/`; `Auto Memory/` and `Daily/`
-are exempt, and never get a `reviewed:` stamp):
+Weekly scope only. Across the curated notes (root notes and `Memories/`;
+`Auto Memory/` and `Daily/` are exempt, and never get a `reviewed:` stamp):
 
 - List notes whose `reviewed:` frontmatter date is more than 90 days old, or absent
   (`Review Queue.base` renders the same list inside Obsidian).
@@ -84,8 +91,44 @@ Fix the mechanical ones (add missing index lines, correct obvious link typos). A
 anything needing judgment to `## Watching` in `Bearing.md`. Stamp `reviewed:` with
 today's date on every curated note the run verified or updated.
 
-## 6. Commit
+## 6. Show the diff, then confirm
 
-One commit, subject starting `Groom memory:` followed by a one-line summary of what
-moved (the `^Groom memory` grep in step 1 depends on this prefix). Push. The run is
-done when `git status` is clean and the push succeeded.
+Nothing from steps 2 to 5 is committed on its own. Before the first curated edit:
+
+```bash
+touch ~/memory/.groom
+```
+
+The write-zone hook passes curated edits while that marker is under three hours old,
+so the whole change is built in the working tree before anyone is asked. Keep a list
+of every file the run modified and every file it created.
+
+With the edits in place, show the whole diff, stat first:
+
+```bash
+cd ~/memory
+git --no-pager diff --stat -- <modified files>
+git --no-pager diff -- <modified files>
+for f in <created files>; do git --no-pager diff --no-index -- /dev/null "$f"; done
+```
+
+Split it across more than one message rather than trimming it. Then wait. One line
+from the user decides:
+
+- Approved: stage the listed files only, never `git add -A` (other sessions may have
+  their own changes in the tree), commit, push, remove the marker.
+
+  ```bash
+  git add -- <modified and created files>
+  git commit -m "Groom memory: <one line on what moved>"
+  git push
+  rm ~/memory/.groom
+  ```
+
+  The `^Groom memory` grep in step 1 depends on that subject prefix.
+- An edit request: make the change, show the diff again, wait again.
+- Declined: `git checkout -- <modified files>`, delete each created file, remove the
+  marker, and say what was reverted.
+
+The run is done when the marker is gone, `git status` shows nothing of its own, and
+the push succeeded.

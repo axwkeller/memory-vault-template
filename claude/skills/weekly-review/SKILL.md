@@ -1,6 +1,6 @@
 ---
 name: weekly-review
-description: Write a weekly review note into the memory vault from the week's Auto Memory capture, git and GitHub activity, and Bearing, and score the week against Compass goals when a charter exists - themes, stale projects, open decisions, progress. Use when the user says "weekly review" or on the scheduled weekly review run.
+description: Write a weekly review note into the memory vault from the week's Auto Memory capture, git and GitHub activity, and Bearing, and score the week against Compass goals when a charter exists - themes, stale projects, open decisions, progress. Use when the user says "weekly review" or as the second stage of the Monday ritual.
 ---
 
 # Weekly review

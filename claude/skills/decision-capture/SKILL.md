@@ -20,7 +20,8 @@ Capture:
 
 - Architecture and design choices ("runtime derivation on the entity over a stored
   status column, because the column went stale").
-- Tooling and process choices ("launchd over cron for the weekly run").
+- Tooling and process choices ("a marker file over an environment variable for the
+  groom's hook bypass").
 - Scope calls with a reason ("held the helper methods back until their callers land").
 
 Skip:

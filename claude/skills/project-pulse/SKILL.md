@@ -1,6 +1,6 @@
 ---
 name: project-pulse
-description: Update the memory vault's active project notes from the last week of GitHub and Jira activity - current initiative, open threads, what got punted. Use when the user says "project pulse", "update the project notes", or on the scheduled weekly pulse run.
+description: Update the memory vault's active project notes from the last week of GitHub and Jira activity - current initiative, open threads, what got punted. Use when the user says "project pulse", "update the project notes", or as the first stage of the Monday ritual.
 ---
 
 # Project pulse

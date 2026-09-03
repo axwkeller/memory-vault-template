@@ -1,8 +1,8 @@
 # Memory vault template
 
 An Obsidian vault that serves as persistent, git-synced memory for Claude Code.
-Claude reads it at session start, writes raw capture to `Auto Memory/`, and a
-scheduled groom run promotes durable facts into curated notes.
+Claude reads it at session start, writes raw capture to `Auto Memory/`, and a groom
+run, driven by hand, promotes durable facts into curated notes.
 
 The design follows a few rules that keep agent memory from rotting:
 
@@ -41,11 +41,13 @@ The design follows a few rules that keep agent memory from rotting:
   every note carrying a `repo:` field (project notes and scoped memory notes alike)
   for browsing one project's memory in one place.
 - Curated notes (root notes, `Memories/`, and `Decisions/`) carry a `reviewed:` frontmatter date,
-  stamped whenever a session verifies or updates the note. The scheduled groom run
-  promotes from `Auto Memory/`, prunes, and audits notes past a 90-day review
-  horizon; contradictions and judgment calls land under Watching in [[Bearing]].
+  stamped whenever a session verifies or updates the note. The groom run promotes
+  from `Auto Memory/`, prunes, and (on its weekly pass) audits notes past a 90-day
+  review horizon; contradictions and judgment calls land under Watching in
+  [[Bearing]].
 - Sessions write freely to `Auto Memory/` and `Daily/`; curated notes change through
-  the groom run or an explicit request (a hook enforces this).
+  the groom run, gated by a `.groom` marker at the vault root, or an explicit
+  request (a hook enforces this).
 - After updating this vault, commit and push.
 
 ## Layout
@@ -61,7 +63,7 @@ The design follows a few rules that keep agent memory from rotting:
 | `Decisions/` | One note per decision: `type: decision`, `date`, `project` (the project note's name), `reviewed`; `Decisions.base` renders them under `Decisions Index.md` |
 | `Auto Memory/` | Raw machine capture from Claude Code's auto-memory; promoted and pruned by the groom run |
 | `Daily/` | One note per day (`type: daily`, `date`), a record the weekly review reads and the groom never touches; shape under Daily notes below |
-| `claude/` | The skills, hooks, and scheduler wrapper to install into your Claude Code config |
+| `claude/` | The skills and hooks to install into your Claude Code config |
 
 ## Setup
 
@@ -97,12 +99,13 @@ Prerequisites: Claude Code, git, and (optionally) Obsidian pointed at the vault.
 4. Install the skills and the write-zone hook:
 
    ```bash
-   cp -R claude/skills/memory-groom claude/skills/decision-capture claude/skills/project-pulse claude/skills/meeting-capture claude/skills/weekly-review ~/.claude/skills/
+   cp -R claude/skills/bod claude/skills/memory-groom claude/skills/decision-capture claude/skills/project-pulse claude/skills/meeting-capture claude/skills/weekly-review ~/.claude/skills/
    cp claude/hooks/memory-write-zones.sh claude/hooks/session-bearing.sh ~/.claude/hooks/
    ```
 
    Set `VAULT` in both hooks to your vault path, then register them in
-   `~/.claude/settings.json`. The write-zone hook confirms curated-note edits; the
+   `~/.claude/settings.json`. The write-zone hook confirms curated-note edits and
+   passes them while a `.groom` marker at the vault root is fresh; the
    session-bearing hook injects `Bearing.md` at session start, plus any `Memories/`
    note whose `repo:` matches the session's git origin, so sessions actually read
    the vault:
@@ -135,74 +138,36 @@ Prerequisites: Claude Code, git, and (optionally) Obsidian pointed at the vault.
    `~/.claude/skills/`. If you keep daily notes, point Obsidian's Daily notes core
    plugin at `Daily/` with the `YYYY-MM-DD` format.
 
-## Scheduling the runs
+## Running the rituals
 
-Each scheduled job is one headless command; the groom's is:
+Nothing runs unattended; every ritual is a slash command typed at a vault session, so
+each run is watched as it happens.
 
-```bash
-MEMORY_GROOM=1 claude -p "/memory-groom" --permission-mode acceptEdits
-```
+- **`/bod`, every morning**: grooms yesterday's `Auto Memory/` capture with the
+  `daily` scope (steps 1 to 4, then 6, no freshness audit) and reports what's open,
+  no planning.
+- **The Monday chain, by hand**: `/project-pulse`, then `/weekly-review`, then
+  `/memory-groom` (bare, the full pass with the freshness audit). Run them in that
+  order from a vault session so the review reads refreshed project notes and the
+  groom promotes and prunes last.
 
-`MEMORY_GROOM=1` lets the run pass the write-zone hook, since nobody is at the
-prompt to answer it. The optional project pulse and weekly review run the same way
-and belong before the groom, so the pulse refreshes project notes, the review reads
-them and the week's capture, and the groom promotes and prunes last.
-
-Do not give the three fixed clock times. A laptop asleep at those times either skips
-them or, under launchd, fires every missed job at once on wake, so three staggered
-jobs become three runs committing to the vault in the same minute.
-`claude/launchd/vault-run.sh` is the shape that survives sleep: fired at 04:00 and
-again every 15 minutes, it runs the chain in order once a day, at the first fire
-after 04:00 that finds the machine awake and online, and exits at once on every
-later tick. It also pushes any commit a stage left unpushed before starting the
-next. Set `VAULT` in it, and `RUN_DAY` if the week's notes should land on a day
-other than Monday, then install it:
-
-```bash
-mkdir -p ~/.claude/launchd ~/.local/state/vault-run/logs
-cp claude/launchd/vault-run.sh ~/.claude/launchd/
-```
-
-On macOS, a LaunchAgent at `~/Library/LaunchAgents/<label>.plist` with these keys,
-loaded with `launchctl bootstrap gui/$(id -u) <plist path>`. launchd replays a
-calendar fire the machine slept through as soon as it wakes; the interval tick is
-the fallback for a reboot or an open too short to have caught it:
-
-```xml
-<key>ProgramArguments</key>
-<array><string>/Users/<you>/.claude/launchd/vault-run.sh</string></array>
-<key>StartCalendarInterval</key>
-<dict><key>Hour</key><integer>4</integer><key>Minute</key><integer>0</integer></dict>
-<key>StartInterval</key>
-<integer>900</integer>
-<key>RunAtLoad</key>
-<true/>
-<key>StandardOutPath</key>
-<string>/Users/<you>/.local/state/vault-run/logs/vault-run.log</string>
-<key>StandardErrorPath</key>
-<string>/Users/<you>/.local/state/vault-run/logs/vault-run.log</string>
-```
-
-Elsewhere, cron, where the tick alone lands the run within 15 minutes of wake:
-
-```cron
-*/15 * * * * $HOME/.claude/launchd/vault-run.sh >> $HOME/.local/state/vault-run/logs/vault-run.log 2>&1
-```
-
-Per-stage output lands in `~/.local/state/vault-run/logs/<skill>.log`. To rerun a
-day by hand, delete `~/.local/state/vault-run/last-run-day` and let the next tick
-pick it up, or run one stage's command directly.
+A groom run touches `~/memory/.groom` before its first curated edit and removes it
+once the change is confirmed or reverted; the write-zone hook passes curated edits
+while that marker is under three hours old, so the whole diff is built before anyone
+is asked to confirm it. `MEMORY_GROOM=1` is the separate bypass for a headless run
+with nobody at the prompt to answer the hook; the groom skill itself waits for a
+person to confirm its diff, so it is not a way to run the groom unattended.
 
 ## Day to day
 
-Nothing here requires remembering to do anything; the phrases below are the manual
-levers on top of what runs by itself.
+Nothing here requires remembering to do anything beyond running `/bod` and the
+Monday chain; the phrases below are the manual levers underneath them.
 
 - **Automatic, every session:** `Bearing.md` is injected at session start, along with
-  any memory note scoped to the repo the session is in; auto-memory
-  captures raw facts to `Auto Memory/`; the session-end habit captures durable
-  decisions there too. Ask Claude to "remember" something and it lands in
-  `Auto Memory/` as well.
+  any memory note scoped to the repo the session is in; auto-memory captures raw
+  facts to `Auto Memory/`; the session-end habit captures durable decisions there
+  too. Ask Claude to "remember" something and it lands in `Auto Memory/` as well.
+- **"bod"**: groom yesterday's capture (`daily` scope) and report what's open.
 - **"capture decisions"**: log this session's durable choices (chose X over Y
   because Z) as `Auto Memory/decision-*.md` files.
 - **"capture this meeting"** (with notes or a transcript pasted): file decisions and
@@ -213,8 +178,8 @@ levers on top of what runs by itself.
   from the last week of GitHub activity (plus Jira where configured).
 - **"weekly review"**: write the week's themes/progress/stale note into
   `Auto Memory/`, scored against Compass when you keep a charter.
-- **"groom memory"**: promote from `Auto Memory/` into curated notes, prune, audit
-  freshness.
+- **"groom memory"**: promote from `Auto Memory/` into curated notes, prune, and,
+  bare or with the `weekly` scope, audit freshness.
 - **Daily notes** under `Daily/` are yours to write however suits you; the weekly
   review reads whatever the week holds.
 - **Editing curated notes by hand** is always fine; the write-zone hook asks once to
@@ -223,16 +188,17 @@ levers on top of what runs by itself.
 
 ## Cadence
 
-- **Morning**: open the machine. The vault run fires within minutes; on `RUN_DAY` it
-  works through pulse, review, and groom, on other days it exits at once. Nothing to
-  do. `tail ~/.local/state/vault-run/logs/vault-run.log` if curious.
+- **Morning**: run `/bod` from a vault session. It grooms yesterday's capture and
+  reports what's open; nothing else runs on its own.
 - **During the day**: sessions read Bearing on start. Say "capture decisions" at the
   end of a piece of work and "capture this meeting" with notes pasted.
 - **Evening**: write today's `Daily/` note, by hand or with an end-of-day skill of
   your own, then commit and push.
-- **After the weekly run**: read the new `Auto Memory/weekly-review-*.md`, then the
-  groom commit (`git log --grep '^Groom memory' -1 -p`). Anything the groom would not
-  decide alone sits under Watching in `Bearing.md`.
+- **Monday, or whenever the week's notes should land**: run the chain by hand,
+  `/project-pulse`, `/weekly-review`, `/memory-groom`. Read the new
+  `Auto Memory/weekly-review-*.md`, then the groom commit
+  (`git log --grep '^Groom memory' -1 -p`). Anything the groom would not decide alone
+  sits under Watching in `Bearing.md`.
 
 ## Daily notes
 
@@ -265,13 +231,13 @@ written, since the groom never reads `Daily/`.
 
 ## The weekly cycle
 
-With the three jobs scheduled as above, each stage feeds the next: the pulse
-refreshes project notes, the review writes `Auto Memory/weekly-review-*.md` from the
-refreshed notes and the week's capture, and the groom promotes durable capture into
-curated notes, prunes, audits freshness, commits, and pushes.
+Run the three commands in order and each stage feeds the next: the pulse refreshes
+project notes, the review writes `Auto Memory/weekly-review-*.md` from the refreshed
+notes and the week's capture, and the groom promotes durable capture into curated
+notes, prunes, audits freshness, commits, and pushes.
 
-The morning after: skim the weekly review note in `Auto Memory/`, then the groom's
-commit (`git log --grep '^Groom memory' -1 -p`). Anything the run would not decide
+Each shows its work as it runs. Afterwards, skim the weekly review note in
+`Auto Memory/`, then the groom's commit (`git log --grep '^Groom memory' -1 -p`). Anything the run would not decide
 alone sits under Watching in `Bearing.md`; settle it by editing the curated note and
 removing the flag. Git is the audit trail, and a bad promotion is a `git revert`
 away.
@@ -284,8 +250,8 @@ optional companion vault,
 who you are, your goals with horizons, how you work, and the patterns you want called
 out, in its own repo behind a hook that denies writes outside an edit session and
 denies reads from work-org checkouts. It is a separate repo because `MEMORY_GROOM=1`
-bypasses this vault's write-zone hook vault-wide, and because this vault may be
-mirrored or shared while a charter never is.
+and a fresh `.groom` marker each bypass this vault's write-zone hook vault-wide, and
+because this vault may be mirrored or shared while a charter never is.
 
 With one present, the weekly review reads `Goals.md` and `How I Work.md` by name and
 adds an `Against Compass` section: one line per goal (moved or no movement), one line
