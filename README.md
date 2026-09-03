@@ -155,12 +155,8 @@ A groom run touches `~/memory/.groom` before its first curated edit and removes 
 once the change is confirmed or reverted; the write-zone hook passes curated edits
 while that marker is under three hours old, so the whole diff is built before anyone
 is asked to confirm it. `MEMORY_GROOM=1` is the separate bypass for a headless run
-with nobody at the prompt to answer the hook, for example a one-off `claude -p`
-invocation:
-
-```bash
-MEMORY_GROOM=1 claude -p "/memory-groom" --permission-mode acceptEdits
-```
+with nobody at the prompt to answer the hook; the groom skill itself waits for a
+person to confirm its diff, so it is not a way to run the groom unattended.
 
 ## Day to day
 
@@ -168,9 +164,9 @@ Nothing here requires remembering to do anything beyond running `/bod` and the
 Monday chain; the phrases below are the manual levers underneath them.
 
 - **Automatic, every session:** `Bearing.md` is injected at session start, along with
-  any memory note scoped to the repo the session is in; auto-memory
-  captures raw facts to `Auto Memory/`. Ask Claude to "remember" something and it
-  lands in `Auto Memory/` as well.
+  any memory note scoped to the repo the session is in; auto-memory captures raw
+  facts to `Auto Memory/`; the session-end habit captures durable decisions there
+  too. Ask Claude to "remember" something and it lands in `Auto Memory/` as well.
 - **"bod"**: groom yesterday's capture (`daily` scope) and report what's open.
 - **"capture decisions"**: log this session's durable choices (chose X over Y
   because Z) as `Auto Memory/decision-*.md` files.
@@ -240,8 +236,8 @@ project notes, the review writes `Auto Memory/weekly-review-*.md` from the refre
 notes and the week's capture, and the groom promotes durable capture into curated
 notes, prunes, audits freshness, commits, and pushes.
 
-The morning after: skim the weekly review note in `Auto Memory/`, then the groom's
-commit (`git log --grep '^Groom memory' -1 -p`). Anything the run would not decide
+Each shows its work as it runs. Afterwards, skim the weekly review note in
+`Auto Memory/`, then the groom's commit (`git log --grep '^Groom memory' -1 -p`). Anything the run would not decide
 alone sits under Watching in `Bearing.md`; settle it by editing the curated note and
 removing the flag. Git is the audit trail, and a bad promotion is a `git revert`
 away.
@@ -254,8 +250,8 @@ optional companion vault,
 who you are, your goals with horizons, how you work, and the patterns you want called
 out, in its own repo behind a hook that denies writes outside an edit session and
 denies reads from work-org checkouts. It is a separate repo because `MEMORY_GROOM=1`
-bypasses this vault's write-zone hook vault-wide, and because this vault may be
-mirrored or shared while a charter never is.
+and a fresh `.groom` marker each bypass this vault's write-zone hook vault-wide, and
+because this vault may be mirrored or shared while a charter never is.
 
 With one present, the weekly review reads `Goals.md` and `How I Work.md` by name and
 adds an `Against Compass` section: one line per goal (moved or no movement), one line
