@@ -2,8 +2,10 @@
 # Enforces the memory vault's write zones, so the convention in README.md is a gate
 # rather than a hope: sessions write freely to `Auto Memory/` and `Daily/`, and
 # edits to curated notes reach a human as a question. The memory-groom skill is the
-# sanctioned path for curated edits; its scheduled runs set MEMORY_GROOM=1 and pass
-# through.
+# sanctioned path for curated edits: it touches `.groom` at the vault root before
+# its first edit and removes it once the diff is confirmed or reverted, and the
+# hook passes while that marker is under three hours old. A headless run with
+# nobody at the prompt sets MEMORY_GROOM=1 instead.
 #
 # Every decision here is `ask`, never `deny`. A wrong guess costs one keystroke.
 set -uo pipefail
@@ -11,6 +13,10 @@ set -uo pipefail
 if [ -n "${MEMORY_GROOM:-}" ]; then exit 0; fi
 
 VAULT="$HOME/memory"
+
+# A fresh marker is a groom building the diff the user will confirm as a whole. One
+# older than three hours is a run that never finished, and passes nothing.
+if [ -n "$(find "$VAULT/.groom" -maxdepth 0 -mmin -180 2>/dev/null)" ]; then exit 0; fi
 
 input=$(cat)
 file_path=$(printf '%s' "$input" | jq -r '.tool_input.file_path // ""')
