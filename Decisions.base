@@ -7,6 +7,8 @@ filters:
 properties:
   date:
     displayName: Date
+  project:
+    displayName: Project
   reviewed:
     displayName: Reviewed
 views:
@@ -15,4 +17,20 @@ views:
     order:
       - file.name
       - date
+      - project
       - reviewed
+    sort:
+      - property: date
+        direction: DESC
+  - type: table
+    name: By project
+    groupBy:
+      property: project
+      direction: ASC
+    order:
+      - file.name
+      - date
+      - reviewed
+    sort:
+      - property: date
+        direction: DESC

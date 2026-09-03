@@ -19,9 +19,10 @@ The design follows a few rules that keep agent memory from rotting:
 ## Conventions
 
 - Flat root, Title Case filenames, `[[wikilinks]]`, index notes instead of folders.
-  Three folders hold Claude-written files: `Memories/` (curated), `Auto Memory/`
-  (raw capture), and `Daily/` (one note per day, a record). Records are kept as
-  written: never promoted, pruned, or stamped `reviewed`.
+  Four folders hold Claude-written files: `Memories/` and `Decisions/` (curated, the
+  latter one note per decision), `Auto Memory/` (raw capture), and `Daily/` (one note
+  per day, a record). Records are kept as written: never promoted, pruned, or stamped
+  `reviewed`.
 - Write distilled facts, not transcripts. A note earns its place by changing how a
   future session behaves.
 - Every stored fact is **timeless, dated, or a pointer**: slow knowledge is stored
@@ -29,7 +30,7 @@ The design follows a few rules that keep agent memory from rotting:
   the live source with a timestamp, never a copy.
 - Frontmatter stays sparse: `reviewed` everywhere, `type` on content notes
   (`project` | `person` | `decision` | `memory` | `daily`), `status` and `repo` on
-  projects, `org` on people, `date` on decisions and dailies. The index notes and [[Bearing]] embed Bases
+  projects, `org` on people, `date` and `project` on decisions, `date` on dailies. The index notes and [[Bearing]] embed Bases
   views (`Projects.base`, `People.base`, `Decisions.base`, `Review Queue.base`) over
   those fields; update the frontmatter, never the tables.
 - A `Memories/` note scoped to one repo (a boy-scout rule, a project-only habit)
@@ -39,7 +40,7 @@ The design follows a few rules that keep agent memory from rotting:
   and loads only when a session reads it deliberately. `Memory By Repo.base` groups
   every note carrying a `repo:` field (project notes and scoped memory notes alike)
   for browsing one project's memory in one place.
-- Curated notes (root notes and `Memories/`) carry a `reviewed:` frontmatter date,
+- Curated notes (root notes, `Memories/`, and `Decisions/`) carry a `reviewed:` frontmatter date,
   stamped whenever a session verifies or updates the note. The scheduled groom run
   promotes from `Auto Memory/`, prunes, and audits notes past a 90-day review
   horizon; contradictions and judgment calls land under Watching in [[Bearing]].
@@ -57,6 +58,7 @@ The design follows a few rules that keep agent memory from rotting:
 | `Projects.base`, `People.base`, `Decisions.base`, `Review Queue.base` | Bases views the indexes and Bearing embed; they render from note frontmatter (`type`, `status`, `repo`, `org`, `date`, `reviewed`), so there are no hand-edited index tables. Needs Obsidian 1.9+ with the Bases core plugin |
 | `Memory By Repo.base` | Bases view grouping every note with a `repo:` field, project notes and repo-scoped `Memories/` notes alike |
 | `Memories/` | Agent-written memory notes (behavior corrections, recurring gotchas); `type: memory`, plus `repo:` when scoped to one repo |
+| `Decisions/` | One note per decision: `type: decision`, `date`, `project` (the project note's name), `reviewed`; `Decisions.base` renders them under `Decisions Index.md` |
 | `Auto Memory/` | Raw machine capture from Claude Code's auto-memory; promoted and pruned by the groom run |
 | `Daily/` | One note per day (`type: daily`, `date`), a record the weekly review reads and the groom never touches; shape under Daily notes below |
 | `claude/` | The skills, hooks, and scheduler wrapper to install into your Claude Code config |

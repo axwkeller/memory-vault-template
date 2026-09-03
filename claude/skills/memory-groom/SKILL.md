@@ -39,9 +39,10 @@ Classify each captured fact with the storage rule from `README.md`: a fact must 
   index; create the note if it does not exist. Project and person notes carry the
   sparse frontmatter from `README.md` (`type`, `status`/`repo` or `org`, `reviewed`);
   the index notes render Bases views over that frontmatter, so a correctly stamped
-  note appears in its index with no index edit. A `decision-*.md` capture becomes a
-  dated bullet in `Decisions Index.md`, or its own root note with `type: decision`
-  and `date` frontmatter when it needs room.
+  note appears in its index with no index edit. A `decision-*.md` capture becomes its
+  own note in `Decisions/`, Title Case filename, with `type: decision`, `date`,
+  `project` (the project note's name, a list when two), and `reviewed` frontmatter;
+  `Decisions.base` renders it under `Decisions Index.md`, so no index edit either.
 - Fast-changing state → `Bearing.md`, or drop it if already stale.
 - Noise (session-local detail, facts the repo or rules already record) → drop.
 - `weekly-review-*.md` files: promote durable bits like any capture, keep the file

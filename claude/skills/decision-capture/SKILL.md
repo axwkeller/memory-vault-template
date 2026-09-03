@@ -7,8 +7,8 @@ description: Capture decisions made during a session (chose X over Y because Z) 
 
 Decisions are the highest-value memory type; they are what code and git history do
 not record. This skill writes them as raw capture into the memory vault
-(`~/memory/Auto Memory/`), where the groom run promotes them into the
-curated notes under `Decisions Index.md`.
+(`~/memory/Auto Memory/`), where the groom run promotes each into its own note
+under `Decisions/`, rendered by `Decisions Index.md`.
 
 ## 1. Find the decisions
 
@@ -53,7 +53,7 @@ transcript.
 
 ## 3. Do not promote
 
-Promotion is the groom run's job (`memory-groom` step 2): a small decision becomes a
-dated bullet in `Decisions Index.md`; one that needs room becomes its own root note
-with `type: decision` frontmatter, rendered by `Decisions.base`. Sessions only write
-the capture; commit and push the vault afterward.
+Promotion is the groom run's job (`memory-groom` step 2): every decision becomes its
+own note in `Decisions/`, with `type: decision`, `date`, `project`, and `reviewed`
+frontmatter, rendered by `Decisions.base`. Sessions only write the capture; commit
+and push the vault afterward.
